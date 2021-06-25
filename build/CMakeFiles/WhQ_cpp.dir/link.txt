@@ -1,0 +1,2 @@
+/usr/bin/ar qc libWhQ_cpp.a  CMakeFiles/WhQ_cpp.dir/src/Server.cpp.o
+/usr/bin/ranlib libWhQ_cpp.a

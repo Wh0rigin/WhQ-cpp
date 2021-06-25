@@ -1,0 +1,1 @@
+/usr/bin/c++     CMakeFiles/WhQ_cppbinary.dir/src/main.cpp.o  -o WhQ_cppbinary  libWhQ_cpp.a 
