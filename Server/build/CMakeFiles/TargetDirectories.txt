@@ -1,0 +1,3 @@
+/home/hsensei/myfile/WhQ-cpp/Server/build/CMakeFiles/rebuild_cache.dir
+/home/hsensei/myfile/WhQ-cpp/Server/build/CMakeFiles/edit_cache.dir
+/home/hsensei/myfile/WhQ-cpp/Server/build/CMakeFiles/WhQ_cpp_Server.dir

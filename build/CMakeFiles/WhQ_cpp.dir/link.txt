@@ -1,1 +1,0 @@
-/usr/bin/c++     CMakeFiles/WhQ_cpp.dir/src/Server.cpp.o CMakeFiles/WhQ_cpp.dir/src/main.cpp.o  -o WhQ_cpp 

@@ -1,0 +1,42 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+../include/Server.h
+sys/socket.h
+-
+sys/types.h
+-
+netinet/in.h
+-
+assert.h
+-
+arpa/inet.h
+-
+unistd.h
+-
+stdlib.h
+-
+poll.h
+-
+fcntl.h
+-
+string.h
+-
+stdio.h
+-
+errno.h
+-
+
+/home/hsensei/myfile/WhQ-cpp/Server/src/Server.cpp
+Server.h
+/home/hsensei/myfile/WhQ-cpp/Server/src/Server.h
+
+/home/hsensei/myfile/WhQ-cpp/Server/src/main.cpp
+Server.cpp
+/home/hsensei/myfile/WhQ-cpp/Server/src/Server.cpp
+
