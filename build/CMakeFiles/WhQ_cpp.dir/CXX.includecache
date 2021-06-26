@@ -29,6 +29,8 @@ string.h
 -
 stdio.h
 -
+errno.h
+-
 
 /home/hsensei/myfile/WhQ-cpp/src/Server.cpp
 Server.h

@@ -2,7 +2,9 @@
 
 inline Server::Server(){}
 inline Server::Server(const char* ip,const int& port):Ip(ip),Port(port){}
-inline Server::~Server(){}
+inline Server::~Server(){
+    printf("connect stop...");
+}
 
 inline void Server::Listen(){
     //绑定socket
@@ -27,6 +29,8 @@ inline void Server::Listen(){
     
     this -> getClient(listenfd);
 
+    
+    close(listenfd);
 }
 
 inline void Server::setPoll(const int& fd){
@@ -41,14 +45,14 @@ inline void Server::setPoll(const int& fd){
 }
 
 inline void Server::getClient(const int& fd){
-    std::size_t user_counter = 0;
+    
     while(1){
-        int ret = poll( fds , user_counter+1 , -1 );
+        int ret = poll( fds , this->user_counter+1 , -1 );
         if( ret < 0 ){
             printf("poll failure");
             break;
         }
-        for(std::size_t i = 0; i < user_counter + 1;++i){
+        for(std::size_t i = 0; i < this->user_counter + 1;++i){
             if(( this->fds[i].fd == fd) && (fds[i].revents & POLLIN )){
                 struct sockaddr_in client_address;
                 socklen_t client_addrlen = sizeof(client_address);
@@ -58,43 +62,46 @@ inline void Server::getClient(const int& fd){
                     continue;
                 }
                 //overload
-                if( user_counter >= USER_LIMIT ){
+                if( this->user_counter >= USER_LIMIT ){
                     const char* info = "to many users!\n";
                     printf(" --- %s --- ", info );
                     send( connfd , info , strlen( info ), 0 );  // to client
                     close(connfd);
                     continue;
                 }
-                ++user_counter;
+                ++this->user_counter;
                 users[connfd].address = client_address;
                 this->setnonblocking(connfd);
-                this->fds[user_counter].fd = connfd;
-                this->fds[user_counter].events = POLLIN | POLLRDHUP | POLLERR ;
-                this->fds[user_counter].revents = 0;
-                printf("comes a new user,now have %d users\n",user_counter);
+                this->fds[this->user_counter].fd = connfd;
+                this->fds[this->user_counter].events = POLLIN | POLLRDHUP | POLLERR ;
+                this->fds[this->user_counter].revents = 0;
+                printf("comes a new user,now have %lu users\n",this->user_counter);
             }
             else if( this->fds[i].revents & POLLERR ){
                 this->doErr(i);
                 continue;
             }
             else if( this->fds[i].revents & POLLRDHUP ){
-                this->doRhup(i,user_counter);
+                this->doRhup(i);
             }
             else if( this->fds[i].revents & POLLIN ){
-                
+                this->doIn(i);
+            }
+            else if( this->fds[i].revents & POLLOUT ){
+                this->doOut(i);
             }
         }
     }
 }
 
-inline const int& setnonblocking(const int& fd){
+inline const int Server::setnonblocking(const int& fd){
     int old_option = fcntl( fd , F_GETFL );
     int new_option = old_option | O_NONBLOCK;
     fcntl( fd , F_SETFL , new_option);
     return old_option;
 }
 
-inline void Server::doErr(const int& who){
+inline void Server::doErr(const std::size_t& who){
     printf("get an error from %d \n",this->fds[who].fd);
     char errors[ 100 ];
     memset(errors , '\0' , 100 );
@@ -104,11 +111,45 @@ inline void Server::doErr(const int& who){
     }
 }
 
-inline void Server::doRhup(std::size_t& i,std::size_t& user_counter){
-    this->users[this->fds[i].fd] = this->users[this->fds[user_counter].fd];
+inline void Server::doRhup(std::size_t& i){
+    this->users[this->fds[i].fd] = this->users[this->fds[this->user_counter].fd];
     close( this->fds[i].fd );
-    this->fds[i] = this->fds[user_counter];
+    this->fds[i] = this->fds[this->user_counter];
     --i;
-    --user_counter;
+    --this->user_counter;
     printf("a client left\n");
+}
+
+inline void Server::doIn(std::size_t& i){
+    int connfd = this->fds[i].fd;
+    memset(this->users[connfd].buf,'\0',BUFFER_SIZE);
+    int ret = recv( connfd , this->users[connfd].buf , BUFFER_SIZE - 1 , 0);
+    printf("get %d bytes of client data %s from %d \n", ret , this->users[connfd].buf , connfd );
+    if( ret < 0 ){
+        if( errno != EAGAIN ){
+            close(connfd);
+            this->users[this->fds[i].fd] = this->users[this->fds[this->user_counter].fd];
+            this->fds[i] = this->fds[this->user_counter];
+            --i;
+            --this->user_counter;
+        }
+    }else if( ret != 0 ){
+        for(std::size_t j = 1; j <= this->user_counter; ++j ){
+            if( this->fds[j].fd == connfd )
+                continue;
+            this -> fds[j].events |= ~POLLIN;
+            this -> fds[j].events |= POLLOUT;
+            this -> users[this -> fds[j].fd].write_buf = this->users[connfd].buf;
+        }
+    }
+}
+
+inline void Server::doOut(const std::size_t& i){
+    int connfd = this->fds[i].fd;
+    if( users[connfd].write_buf ){
+        int ret = send( connfd , this->users[connfd].write_buf,strlen(this->users[connfd].write_buf),0);
+        this->users[connfd].write_buf = NULL;
+        this->fds[i].events |= ~POLLOUT;
+        this->fds[i].events |= POLLIN;
+    }
 }

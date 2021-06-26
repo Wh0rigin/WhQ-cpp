@@ -28,21 +28,25 @@ struct client_data{
 
 class Server{
 public:
-    inline Server();
+    inline explicit Server();
     inline ~Server();
-    inline Server(const char* ip,const int& port);
+    inline explicit Server(const char* ip,const int& port);
     inline void Listen();
 private:
     inline void setPoll(const int& fd);
     inline void getClient(const int& fd);
-    inline const int& setnonblocking(const int& fd);
-    inline void doErr(const int& who);
-    inline void doRhup(std::size_t& i,std::size_t& user_counter);
+    inline const int setnonblocking(const int& fd);
+private:
+    inline void doErr(const std::size_t& who);
+    inline void doRhup(std::size_t& i);
+    inline void doIn(std::size_t& i);
+    inline void doOut(const std::size_t& i);
 private:
     const char* Ip;
     int Port;
     client_data users[ FD_LIMIT ];
     pollfd fds[ USER_LIMIT + 1 ];
+    std::size_t user_counter = 0;
 };
 
 #endif

@@ -16,4 +16,9 @@ int main(int argc ,char* argv[]){
 
     server->Listen();
     
+    
+    //异常掉出
+    delete server;
+
+    return 0;
 }
