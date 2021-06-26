@@ -4,3 +4,7 @@
 CMakeFiles/WhQ_cpp.dir/src/Server.cpp.o: ../include/Server.h
 CMakeFiles/WhQ_cpp.dir/src/Server.cpp.o: ../src/Server.cpp
 
+CMakeFiles/WhQ_cpp.dir/src/main.cpp.o: ../include/Server.h
+CMakeFiles/WhQ_cpp.dir/src/main.cpp.o: ../src/Server.cpp
+CMakeFiles/WhQ_cpp.dir/src/main.cpp.o: ../src/main.cpp
+

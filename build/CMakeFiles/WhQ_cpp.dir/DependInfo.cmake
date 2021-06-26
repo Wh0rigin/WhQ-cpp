@@ -5,6 +5,7 @@ set(CMAKE_DEPENDS_LANGUAGES
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_CXX
   "/home/hsensei/myfile/WhQ-cpp/src/Server.cpp" "/home/hsensei/myfile/WhQ-cpp/build/CMakeFiles/WhQ_cpp.dir/src/Server.cpp.o"
+  "/home/hsensei/myfile/WhQ-cpp/src/main.cpp" "/home/hsensei/myfile/WhQ-cpp/build/CMakeFiles/WhQ_cpp.dir/src/main.cpp.o"
   )
 set(CMAKE_CXX_COMPILER_ID "GNU")
 

@@ -1,8 +1,6 @@
 #include "Server.cpp"
 
-#define USER_LIMIT 5    //最大用户限制
-#define BUFFER_SIZE 64  //缓存区最大限制
-#define FD_LIMIT 65535  //文件描述符数量限制
+
 
 Server* server;  //前置声明
 

@@ -111,17 +111,17 @@ depend:
 .PHONY : depend
 
 #=============================================================================
-# Target rules for targets named hello_headers
+# Target rules for targets named WhQ_cpp
 
 # Build rule for target.
-hello_headers: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 hello_headers
-.PHONY : hello_headers
+WhQ_cpp: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 WhQ_cpp
+.PHONY : WhQ_cpp
 
 # fast build rule for target.
-hello_headers/fast:
-	$(MAKE) -f CMakeFiles/hello_headers.dir/build.make CMakeFiles/hello_headers.dir/build
-.PHONY : hello_headers/fast
+WhQ_cpp/fast:
+	$(MAKE) -f CMakeFiles/WhQ_cpp.dir/build.make CMakeFiles/WhQ_cpp.dir/build
+.PHONY : WhQ_cpp/fast
 
 src/Server.o: src/Server.cpp.o
 
@@ -129,7 +129,7 @@ src/Server.o: src/Server.cpp.o
 
 # target to build an object file
 src/Server.cpp.o:
-	$(MAKE) -f CMakeFiles/hello_headers.dir/build.make CMakeFiles/hello_headers.dir/src/Server.cpp.o
+	$(MAKE) -f CMakeFiles/WhQ_cpp.dir/build.make CMakeFiles/WhQ_cpp.dir/src/Server.cpp.o
 .PHONY : src/Server.cpp.o
 
 src/Server.i: src/Server.cpp.i
@@ -138,7 +138,7 @@ src/Server.i: src/Server.cpp.i
 
 # target to preprocess a source file
 src/Server.cpp.i:
-	$(MAKE) -f CMakeFiles/hello_headers.dir/build.make CMakeFiles/hello_headers.dir/src/Server.cpp.i
+	$(MAKE) -f CMakeFiles/WhQ_cpp.dir/build.make CMakeFiles/WhQ_cpp.dir/src/Server.cpp.i
 .PHONY : src/Server.cpp.i
 
 src/Server.s: src/Server.cpp.s
@@ -147,7 +147,7 @@ src/Server.s: src/Server.cpp.s
 
 # target to generate assembly for a file
 src/Server.cpp.s:
-	$(MAKE) -f CMakeFiles/hello_headers.dir/build.make CMakeFiles/hello_headers.dir/src/Server.cpp.s
+	$(MAKE) -f CMakeFiles/WhQ_cpp.dir/build.make CMakeFiles/WhQ_cpp.dir/src/Server.cpp.s
 .PHONY : src/Server.cpp.s
 
 src/main.o: src/main.cpp.o
@@ -156,7 +156,7 @@ src/main.o: src/main.cpp.o
 
 # target to build an object file
 src/main.cpp.o:
-	$(MAKE) -f CMakeFiles/hello_headers.dir/build.make CMakeFiles/hello_headers.dir/src/main.cpp.o
+	$(MAKE) -f CMakeFiles/WhQ_cpp.dir/build.make CMakeFiles/WhQ_cpp.dir/src/main.cpp.o
 .PHONY : src/main.cpp.o
 
 src/main.i: src/main.cpp.i
@@ -165,7 +165,7 @@ src/main.i: src/main.cpp.i
 
 # target to preprocess a source file
 src/main.cpp.i:
-	$(MAKE) -f CMakeFiles/hello_headers.dir/build.make CMakeFiles/hello_headers.dir/src/main.cpp.i
+	$(MAKE) -f CMakeFiles/WhQ_cpp.dir/build.make CMakeFiles/WhQ_cpp.dir/src/main.cpp.i
 .PHONY : src/main.cpp.i
 
 src/main.s: src/main.cpp.s
@@ -174,7 +174,7 @@ src/main.s: src/main.cpp.s
 
 # target to generate assembly for a file
 src/main.cpp.s:
-	$(MAKE) -f CMakeFiles/hello_headers.dir/build.make CMakeFiles/hello_headers.dir/src/main.cpp.s
+	$(MAKE) -f CMakeFiles/WhQ_cpp.dir/build.make CMakeFiles/WhQ_cpp.dir/src/main.cpp.s
 .PHONY : src/main.cpp.s
 
 # Help Target
@@ -185,7 +185,7 @@ help:
 	@echo "... depend"
 	@echo "... rebuild_cache"
 	@echo "... edit_cache"
-	@echo "... hello_headers"
+	@echo "... WhQ_cpp"
 	@echo "... src/Server.o"
 	@echo "... src/Server.i"
 	@echo "... src/Server.s"

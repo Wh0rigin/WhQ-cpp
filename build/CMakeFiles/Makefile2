@@ -53,7 +53,7 @@ CMAKE_BINARY_DIR = /home/hsensei/myfile/WhQ-cpp/build
 # Directory level rules for the build root directory
 
 # The main recursive "all" target.
-all: CMakeFiles/hello_headers.dir/all
+all: CMakeFiles/WhQ_cpp.dir/all
 
 .PHONY : all
 
@@ -63,36 +63,36 @@ preinstall:
 .PHONY : preinstall
 
 # The main recursive "clean" target.
-clean: CMakeFiles/hello_headers.dir/clean
+clean: CMakeFiles/WhQ_cpp.dir/clean
 
 .PHONY : clean
 
 #=============================================================================
-# Target rules for target CMakeFiles/hello_headers.dir
+# Target rules for target CMakeFiles/WhQ_cpp.dir
 
 # All Build rule for target.
-CMakeFiles/hello_headers.dir/all:
-	$(MAKE) -f CMakeFiles/hello_headers.dir/build.make CMakeFiles/hello_headers.dir/depend
-	$(MAKE) -f CMakeFiles/hello_headers.dir/build.make CMakeFiles/hello_headers.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/hsensei/myfile/WhQ-cpp/build/CMakeFiles --progress-num=1,2,3 "Built target hello_headers"
-.PHONY : CMakeFiles/hello_headers.dir/all
+CMakeFiles/WhQ_cpp.dir/all:
+	$(MAKE) -f CMakeFiles/WhQ_cpp.dir/build.make CMakeFiles/WhQ_cpp.dir/depend
+	$(MAKE) -f CMakeFiles/WhQ_cpp.dir/build.make CMakeFiles/WhQ_cpp.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/hsensei/myfile/WhQ-cpp/build/CMakeFiles --progress-num=1,2,3 "Built target WhQ_cpp"
+.PHONY : CMakeFiles/WhQ_cpp.dir/all
 
 # Build rule for subdir invocation for target.
-CMakeFiles/hello_headers.dir/rule: cmake_check_build_system
+CMakeFiles/WhQ_cpp.dir/rule: cmake_check_build_system
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/hsensei/myfile/WhQ-cpp/build/CMakeFiles 3
-	$(MAKE) -f CMakeFiles/Makefile2 CMakeFiles/hello_headers.dir/all
+	$(MAKE) -f CMakeFiles/Makefile2 CMakeFiles/WhQ_cpp.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/hsensei/myfile/WhQ-cpp/build/CMakeFiles 0
-.PHONY : CMakeFiles/hello_headers.dir/rule
+.PHONY : CMakeFiles/WhQ_cpp.dir/rule
 
 # Convenience name for target.
-hello_headers: CMakeFiles/hello_headers.dir/rule
+WhQ_cpp: CMakeFiles/WhQ_cpp.dir/rule
 
-.PHONY : hello_headers
+.PHONY : WhQ_cpp
 
 # clean rule for target.
-CMakeFiles/hello_headers.dir/clean:
-	$(MAKE) -f CMakeFiles/hello_headers.dir/build.make CMakeFiles/hello_headers.dir/clean
-.PHONY : CMakeFiles/hello_headers.dir/clean
+CMakeFiles/WhQ_cpp.dir/clean:
+	$(MAKE) -f CMakeFiles/WhQ_cpp.dir/build.make CMakeFiles/WhQ_cpp.dir/clean
+.PHONY : CMakeFiles/WhQ_cpp.dir/clean
 
 #=============================================================================
 # Special targets to cleanup operation of make.

@@ -1,7 +1,8 @@
 file(REMOVE_RECURSE
   "CMakeFiles/WhQ_cpp.dir/src/Server.cpp.o"
-  "libWhQ_cpp.a"
-  "libWhQ_cpp.pdb"
+  "CMakeFiles/WhQ_cpp.dir/src/main.cpp.o"
+  "WhQ_cpp"
+  "WhQ_cpp.pdb"
 )
 
 # Per-language clean rules from dependency scanning.
