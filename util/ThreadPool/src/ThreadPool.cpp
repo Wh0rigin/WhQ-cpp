@@ -70,6 +70,7 @@ void* doWorker(void* arg){
         Task task;
         task.function = pool->taskQueue.front()->function;
         task.arg =  pool->taskQueue.front()->arg;
+        free(pool->taskQueue.front());
         pool->taskQueue.pop();
        --pool->queueSize;
 
@@ -163,8 +164,11 @@ inline void ThreadPool::threadPoolAdd(void(*func)(void*),void* arg){
         return;
     }
     //添加任务
-    this->taskQueue.back()->function = func;
-    this->taskQueue.back()->arg = arg;
+    Task* task = new Task();
+    task->function = func;
+    task->arg = arg;
+    this->taskQueue.push(task);
+
     ++this->queueSize;
 
     pthread_cond_signal(&this->isEmpty);
@@ -196,10 +200,13 @@ inline const int& ThreadPool::threadPoolDestroy(){
         pthread_cond_signal(&this->isEmpty);
     }
 
-    delete taskQueue;
-
     if(this->workerIDs){
         free(this->workerIDs);
+    }
+    
+    while(!taskQueue.empty()){
+        free(taskQueue.front());
+        taskQueue.pop();
     }
 
     pthread_mutex_destroy(&this->mutexPool);
