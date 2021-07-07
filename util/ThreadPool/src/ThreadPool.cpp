@@ -42,103 +42,6 @@ inline ThreadPool::~ThreadPool(){
     this->threadPoolDestroy();
 }
 
-void* doWorker(void* arg){
-    ThreadPool* pool = (ThreadPool*)arg;
-
-    while(1){
-        pthread_mutex_lock(&pool->mutexPool);
-        while(pool->queueSize == 0 && !pool->shutdown){
-            // 阻塞线程
-            pthread_cond_wait(&pool->isEmpty,&pool->mutexPool);
-
-            //判断是否销毁线程
-            if(pool->exitNum > 0 ){
-                --pool->exitNum;
-                if(pool->liveNum > pool->minNum){
-                    --pool->liveNum;
-                    pthread_mutex_unlock(&pool->mutexPool);
-                    pool->threadExit();
-                }
-            }
-        }
-
-        if( pool -> shutdown ){
-            pthread_mutex_unlock(&pool->mutexPool);
-            pool->threadExit();
-        }
-
-        Task task;
-        task.function = pool->taskQueue.front()->function;
-        task.arg =  pool->taskQueue.front()->arg;
-        free(pool->taskQueue.front());
-        pool->taskQueue.pop();
-       --pool->queueSize;
-
-        pthread_cond_signal(&pool->isFull);
-
-        pthread_mutex_unlock(&pool->mutexPool);
-
-        printf("thread %ld start working...\n");
-        pthread_mutex_lock(&pool->mutexBusy);
-        ++pool->busyNum;
-        pthread_mutex_unlock(&pool->mutexBusy);
-
-        
-        (*task.function)(task.arg);
-        std::free(task.arg);
-        task.arg = NULL;
-
-        pthread_mutex_lock(&pool->mutexBusy);
-        --pool->busyNum;
-        pthread_mutex_unlock(&pool->mutexBusy);
-        printf("thread %ld end working...\n");
-    }
-
-    return NULL;
-}
-
-void* doManager(void* arg){
-    ThreadPool* pool = (ThreadPool*)arg;
-    while(!pool->shutdown){
-
-
-        sleep(3);
-
-        pthread_mutex_lock(&pool->mutexPool);
-        int queueSize = pool->queueSize;
-        int liveNum = pool->liveNum;
-        pthread_mutex_unlock(&pool->mutexPool);
-
-        pthread_mutex_lock(&pool->mutexBusy);
-        int busyNum = pool->busyNum;
-        pthread_mutex_unlock(&pool->mutexBusy);
-
-        if(queueSize > liveNum && liveNum < pool->maxNum){
-            pthread_mutex_lock(&pool->mutexPool);
-            int counter = 0;
-            for(int i = 0; i < pool->maxNum && counter < NUMBER && pool->liveNum < pool->maxNum;++i){
-                if( pool -> workerIDs[i] == 0 ){
-                    pthread_create(&pool->workerIDs[i],NULL,doWorker,pool);
-                    ++counter;
-                    
-                    ++pool -> liveNum;
-                }
-            }
-            pthread_mutex_unlock(&pool->mutexPool);
-        }
-
-        if(busyNum *2 < liveNum  && liveNum > pool->minNum){
-            pthread_mutex_lock(&pool->mutexPool);
-            pool->exitNum = NUMBER;
-            pthread_mutex_unlock(&pool->mutexPool);
-
-            for(int i = 0;i < NUMBER;++i){
-                pthread_cond_signal(&pool->isEmpty);
-            }
-        }
-    }
-    return NULL;
-}
 
 
 inline void ThreadPool::threadExit(){
@@ -146,7 +49,7 @@ inline void ThreadPool::threadExit(){
     for(int i =0; i < this->maxNum;++i){
         if(this->workerIDs[i] == tid){
             this->workerIDs[i] = 0;
-            printf("threadExit() called,%ld exiting...\n");
+            printf("threadExit() called,%ld exiting...\n",tid);
             break;
         }
     }
@@ -176,21 +79,21 @@ inline void ThreadPool::threadPoolAdd(void(*func)(void*),void* arg){
     pthread_mutex_unlock(&this->mutexPool);
 }
 
-inline const int& ThreadPool::threadPoolBusyNum(){
+inline const int ThreadPool::threadPoolBusyNum(){
     pthread_mutex_lock(&this->mutexBusy);
-    int busyNum = this->busyNum;
+    int busy = this->busyNum;
     pthread_mutex_unlock(&this->mutexBusy);
-    return busyNum;
+    return busy;
 }
 
-inline const int& ThreadPool::threadPoolLiveNum(){
+inline const int ThreadPool::threadPoolLiveNum(){
     pthread_mutex_lock(&this->mutexPool);
-    int liveNum = this->liveNum;
+    int live = this->liveNum;
     pthread_mutex_unlock(&this->mutexPool);
-    return liveNum;
+    return live;
 }
 
-inline const int& ThreadPool::threadPoolDestroy(){
+inline const int ThreadPool::threadPoolDestroy(){
     //关闭线程池
     this->shutdown = true;
 

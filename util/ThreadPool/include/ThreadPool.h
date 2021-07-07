@@ -20,9 +20,9 @@ public:
     inline explicit ThreadPool(const int& min , const int& max , const int& queueSize,const int& queueCapacity);
     inline void threadExit();
     inline void threadPoolAdd(void(*func)(void*),void* arg);
-    inline const int& threadPoolBusyNum();
-    inline const int& threadPoolLiveNum();
-    inline const int& threadPoolDestroy();
+    inline const int threadPoolBusyNum();
+    inline const int threadPoolLiveNum();
+    inline const int threadPoolDestroy();
 public:
     pthread_mutex_t mutexPool;  //线程池锁
     pthread_mutex_t mutexBusy;  //busyNum单独锁
