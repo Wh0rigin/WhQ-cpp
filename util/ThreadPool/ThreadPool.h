@@ -17,13 +17,20 @@ class ThreadPool{
 public:
     inline explicit ThreadPool();
     inline ~ThreadPool();
-    inline explicit ThreadPool(const int& min , const int& max , const int& queueSize);
+    inline explicit ThreadPool(const int& min , const int& max , const int& queueSize,const int& queueCapacity);
+    inline void threadExit();
+    inline void threadPoolAdd(void(*func)(void*),void* arg);
+    inline const int& threadPoolBusyNum();
+    inline const int& threadPoolLiveNum();
+    inline const int& threadPoolDestroy();
 public:
     pthread_mutex_t mutexPool;  //线程池锁
     pthread_mutex_t mutexBusy;  //busyNum单独锁
 
     pthread_cond_t isFull;      //任务队列是否满了
     pthread_cond_t isEmpty;     //任务队列是否为空
+
+
 
     std::queue<Task*> taskQueue;
 
@@ -42,12 +49,7 @@ private:
 
 
     pthread_t managerID;        //管理者线程
-
-
-
-
-
-
+    int queueCapacity;
 
 };
 

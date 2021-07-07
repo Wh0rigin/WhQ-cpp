@@ -10,7 +10,7 @@ struct Task
 inline ThreadPool::ThreadPool():minNum(0),maxNum(0),queueSize(0),busyNum(0){  //default
 
 }
-inline ThreadPool::ThreadPool(const int& min , const int& max , const int& queueSize):minNum(min),maxNum(max),queueSize(queueSize),busyNum(0),liveNum(min),exitNum(0){
+inline ThreadPool::ThreadPool(const int& min , const int& max , const int& queueSize,const int& queueCapacity):minNum(min),maxNum(max),queueSize(queueSize),queueCapacity(),busyNum(0),liveNum(min),exitNum(0){
     do{
         this->workerIDs = (pthread_t*)std::malloc(sizeof(pthread_t) * maxNum);
         if( this-> workerIDs == NULL ){
@@ -39,7 +39,7 @@ inline ThreadPool::ThreadPool(const int& min , const int& max , const int& queue
     throw "initial error!";
 }
 inline ThreadPool::~ThreadPool(){
-    std::free(this->workerIDs);
+    this->threadPoolDestroy();
 }
 
 void* doWorker(void* arg){
@@ -54,20 +54,26 @@ void* doWorker(void* arg){
             //判断是否销毁线程
             if(pool->exitNum > 0 ){
                 --pool->exitNum;
-                pthread_mutex_unlock(&pool->mutexPool);
-                pthread_exit(NULL);
+                if(pool->liveNum > pool->minNum){
+                    --pool->liveNum;
+                    pthread_mutex_unlock(&pool->mutexPool);
+                    pool->threadExit();
+                }
             }
         }
 
         if( pool -> shutdown ){
             pthread_mutex_unlock(&pool->mutexPool);
-            pthread_exit(NULL);
+            pool->threadExit();
         }
 
         Task task;
         task.function = pool->taskQueue.front()->function;
         task.arg =  pool->taskQueue.front()->arg;
         pool->taskQueue.pop();
+       --pool->queueSize;
+
+        pthread_cond_signal(&pool->isFull);
 
         pthread_mutex_unlock(&pool->mutexPool);
 
@@ -131,4 +137,75 @@ void* doManager(void* arg){
         }
     }
     return NULL;
+}
+
+
+inline void ThreadPool::threadExit(){
+    pthread_t tid = pthread_self();
+    for(int i =0; i < this->maxNum;++i){
+        if(this->workerIDs[i] == tid){
+            this->workerIDs[i] = 0;
+            printf("threadExit() called,%ld exiting...\n");
+            break;
+        }
+    }
+    pthread_exit(NULL);
+}
+
+
+inline void ThreadPool::threadPoolAdd(void(*func)(void*),void* arg){
+    pthread_mutex_lock(&this->mutexPool);
+    while(!this->shutdown && this->queueSize == this->queueCapacity){
+        pthread_cond_wait(&this->isFull,&this->mutexPool);
+    }
+    if(this->shutdown){
+        pthread_mutex_unlock(&this->mutexPool);
+        return;
+    }
+    //添加任务
+    this->taskQueue.back()->function = func;
+    this->taskQueue.back()->arg = arg;
+    ++this->queueSize;
+
+    pthread_cond_signal(&this->isEmpty);
+
+    pthread_mutex_unlock(&this->mutexPool);
+}
+
+inline const int& ThreadPool::threadPoolBusyNum(){
+    pthread_mutex_lock(&this->mutexBusy);
+    int busyNum = this->busyNum;
+    pthread_mutex_unlock(&this->mutexBusy);
+    return busyNum;
+}
+
+inline const int& ThreadPool::threadPoolLiveNum(){
+    pthread_mutex_lock(&this->mutexPool);
+    int liveNum = this->liveNum;
+    pthread_mutex_unlock(&this->mutexPool);
+    return liveNum;
+}
+
+inline const int& ThreadPool::threadPoolDestroy(){
+    //关闭线程池
+    this->shutdown = true;
+
+    pthread_join(this->managerID,NULL);
+
+    for(int i = 0; i < this->liveNum;++i){
+        pthread_cond_signal(&this->isEmpty);
+    }
+
+    delete taskQueue;
+
+    if(this->workerIDs){
+        free(this->workerIDs);
+    }
+
+    pthread_mutex_destroy(&this->mutexPool);
+    pthread_mutex_destroy(&this->mutexBusy);
+
+    pthread_cond_destroy(&this->isEmpty);
+    pthread_cond_destroy(&this->isFull);
+    return 0;
 }
