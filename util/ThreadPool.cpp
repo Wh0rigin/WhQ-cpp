@@ -28,10 +28,10 @@ inline ThreadPool::ThreadPool(const int& min , const int& max , const int& queue
         this -> shutdown = false;
 
         //创建管理者线程
-        pthread_create(&this->managerID,NULL,doManager,NULL);
+        pthread_create(&this->managerID,NULL,doManager,this);
         //创建工作者线程
         for(int i = 0; i < this->minNum; ++i){
-            pthread_create(&this->workerIDs[i],NULL,doWorker,NULL);
+            pthread_create(&this->workerIDs[i],NULL,doWorker,this);
         }
         return;
     }while(0);
@@ -50,6 +50,13 @@ void* doWorker(void* arg){
         while(pool->queueSize == 0 && !pool->shutdown){
             // 阻塞线程
             pthread_cond_wait(&pool->isEmpty,&pool->mutexPool);
+
+            //判断是否销毁线程
+            if(pool->exitNum > 0 ){
+                --pool->exitNum;
+                pthread_mutex_unlock(&pool->mutexPool);
+                pthread_exit(NULL);
+            }
         }
 
         if( pool -> shutdown ){
@@ -84,5 +91,44 @@ void* doWorker(void* arg){
 }
 
 void* doManager(void* arg){
+    ThreadPool* pool = (ThreadPool*)arg;
+    while(!pool->shutdown){
+
+
+        sleep(3);
+
+        pthread_mutex_lock(&pool->mutexPool);
+        int queueSize = pool->queueSize;
+        int liveNum = pool->liveNum;
+        pthread_mutex_unlock(&pool->mutexPool);
+
+        pthread_mutex_lock(&pool->mutexBusy);
+        int busyNum = pool->busyNum;
+        pthread_mutex_unlock(&pool->mutexBusy);
+
+        if(queueSize > liveNum && liveNum < pool->maxNum){
+            pthread_mutex_lock(&pool->mutexPool);
+            int counter = 0;
+            for(int i = 0; i < pool->maxNum && counter < NUMBER && pool->liveNum < pool->maxNum;++i){
+                if( pool -> workerIDs[i] == 0 ){
+                    pthread_create(&pool->workerIDs[i],NULL,doWorker,pool);
+                    ++counter;
+                    
+                    ++pool -> liveNum;
+                }
+            }
+            pthread_mutex_unlock(&pool->mutexPool);
+        }
+
+        if(busyNum *2 < liveNum  && liveNum > pool->minNum){
+            pthread_mutex_lock(&pool->mutexPool);
+            pool->exitNum = NUMBER;
+            pthread_mutex_unlock(&pool->mutexPool);
+
+            for(int i = 0;i < NUMBER;++i){
+                pthread_cond_signal(&pool->isEmpty);
+            }
+        }
+    }
     return NULL;
 }

@@ -6,9 +6,12 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <unistd.h>
 
 //任务队列
 struct Task;
+
+const int NUMBER = 2;
 
 class ThreadPool{
 public:
@@ -25,24 +28,30 @@ public:
     std::queue<Task*> taskQueue;
 
     int busyNum;    //工作中线程
-
+    
+    int liveNum;    //存活线程
     int queueSize;
     bool shutdown;      //是否销毁线程池
+
+    int minNum;     //最小线程数
+    int maxNum;     //最大线程数
+
+    int exitNum;    //需要杀死的线程数
+    pthread_t *workerIDs;       //工作者线程
 private:
 
 
     pthread_t managerID;        //管理者线程
-    pthread_t *workerIDs;       //工作者线程
-    int minNum;     //最小线程数
-    int maxNum;     //最大线程数
 
-    int liveNum;    //存活线程
-    int exitNum;    //需要杀死的线程数
+
+
 
 
 
 
 };
 
+void* doWorker(void* arg);
+void* doManager(void* arg);
 
 #endif
