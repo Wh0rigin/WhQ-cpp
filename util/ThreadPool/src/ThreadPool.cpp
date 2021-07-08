@@ -64,7 +64,7 @@ void* ThreadPool<T>::doManager(void* arg){
 
         if( busyNum * 2 < liveNum && liveNum > pool->minNum){
             pthread_mutex_lock(&pool->mutexPool);
-            pool->exitNum - NUMBER;
+            pool->exitNum = NUMBER;
             pthread_mutex_unlock(&pool->mutexPool);
             for(int i = 0;i < NUMBER;++i){
                 pthread_cond_signal(&pool->isEmpty);
@@ -123,7 +123,7 @@ inline void ThreadPool<T>::threadExit(){
     for(int i = 0;i < maxNum;++i){
         if(workerIDs[i] == tid){
             workerIDs[i] = 0;
-            printf("threadExit() called %ld exiting...",tid);
+            printf("threadExit() called %ld exiting...\n",tid);
             break;
         }
     }
