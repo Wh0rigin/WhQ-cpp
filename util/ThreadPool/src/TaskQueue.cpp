@@ -1,29 +1,34 @@
-#include "TaskQueue.h"
+#include "TaskQueue.hpp"
 
-inline TaskQueue::TaskQueue(){
+template <typename T>
+inline TaskQueue<T>::TaskQueue(){
     pthread_mutex_init(&m_mutex,NULL);
 }
 
-inline TaskQueue::~TaskQueue(){
+template <typename T>
+inline TaskQueue<T>::~TaskQueue(){
     pthread_mutex_destroy(&m_mutex);
 }
 
 //添加任务
-inline void TaskQueue::addTask(const Task& task){
+template <typename T>
+inline void TaskQueue<T>::addTask(const Task<T>& task){
     pthread_mutex_lock(&m_mutex);
     m_taskQ.push_back(task);
     pthread_mutex_unlock(&m_mutex);
 }
 
-inline void TaskQueue::addTask(callback f,void* arg){
+template <typename T>
+inline void TaskQueue<T>::addTask(callback f,void* arg){
     pthread_mutex_lock(&m_mutex);
-    m_taskQ.push_back(Task(f,arg));
+    m_taskQ.push_back(Task<T>(f,arg));
     pthread_mutex_unlock(&m_mutex);
 }
 
 //拿出任务
-inline const Task TaskQueue::takeTask(){
-    Task t;
+template <typename T>
+inline const Task<T> TaskQueue<T>::takeTask(){
+    Task<T> t;
     pthread_mutex_lock(&m_mutex);
     if(!m_taskQ.empty()){
         t = m_taskQ.front();

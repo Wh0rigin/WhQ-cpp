@@ -1,28 +1,28 @@
 #ifndef __THREADPOOL__
 #define __THREADPOOL__
 
-#include "TaskQueue.h"
+#include "TaskQueue.hpp"
 #include <stdio.h>
 #include <unistd.h>
 #include <string.h>
 
-
+template<typename T>
 class ThreadPool{
 public:
-    inline ThreadPool(const size_t& min,const size_t& max);
-    inline ~ThreadPool();
-    inline void addTask(callback func,void* arg);
-    inline void addTask(const Task& t);
-    inline const int getBusyNum();
-    inline const int getAliveNum();
+    ThreadPool(const size_t& min,const size_t& max);
+    ~ThreadPool();
+    void addTask(callback func,void* arg);
+    void addTask(const Task<T>& t);
+    const int getBusyNum();
+    const int getAliveNum();
 private:
     static void* doWorker(void* arg);
     static void* doManager(void* arg);
 
-    inline void threadExit();
+    void threadExit();
 
 private:
-    TaskQueue* taskQ;       //任务队列
+    TaskQueue<T>* taskQ;       //任务队列
 
     pthread_t managerID;    //管理者线程
     pthread_t* workerIDs;   //工作者线程

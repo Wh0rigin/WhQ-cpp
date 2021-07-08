@@ -1,11 +1,12 @@
-#include "ThreadPool.h"
+#include "ThreadPool.hpp"
+#include "TaskQueue.cpp"
 
-
-inline ThreadPool::ThreadPool(const size_t& min,const size_t& max):minNum(min),maxNum(max),busyNum(0),liveNum(min),exitNum(0),shutdown(false){
+template<typename T>
+inline ThreadPool<T>::ThreadPool(const size_t& min,const size_t& max):minNum(min),maxNum(max),busyNum(0),liveNum(min),exitNum(0),shutdown(false){
     
     do{
 
-        taskQ = new TaskQueue();
+        taskQ = new TaskQueue<T>();
         if( taskQ == nullptr ){
             printf("new taskQ fail...\n");
             break;
@@ -37,7 +38,8 @@ inline ThreadPool::ThreadPool(const size_t& min,const size_t& max):minNum(min),m
     if(taskQ)delete taskQ;
 }
 
-void* ThreadPool::doManager(void* arg){
+template<typename T>
+void* ThreadPool<T>::doManager(void* arg){
     ThreadPool* pool = static_cast<ThreadPool*>(arg);
     while(!pool->shutdown){
         sleep(3);
@@ -72,7 +74,8 @@ void* ThreadPool::doManager(void* arg){
     return nullptr;
 }
 
-void* ThreadPool::doWorker(void* arg){
+template<typename T>
+void* ThreadPool<T>::doWorker(void* arg){
     ThreadPool* pool = static_cast<ThreadPool*>(arg);
     while(1){
         pthread_mutex_lock(&pool->mutexPool);
@@ -95,7 +98,7 @@ void* ThreadPool::doWorker(void* arg){
             pool->threadExit();
         }
 
-        Task task = pool->taskQ->takeTask();
+        Task<T> task = pool->taskQ->takeTask();
         ++pool->busyNum;
         pthread_mutex_unlock(&pool->mutexPool);
 
@@ -114,7 +117,8 @@ void* ThreadPool::doWorker(void* arg){
     return nullptr;
 }
 
-inline void ThreadPool::threadExit(){
+template<typename T>
+inline void ThreadPool<T>::threadExit(){
     pthread_t tid = pthread_self();
     for(int i = 0;i < maxNum;++i){
         if(workerIDs[i] == tid){
@@ -126,15 +130,17 @@ inline void ThreadPool::threadExit(){
     pthread_exit(NULL);
 }
 
-inline void ThreadPool::addTask(callback func,void* arg){
+template<typename T>
+inline void ThreadPool<T>::addTask(callback func,void* arg){
     if(shutdown){
         return;
     }
-    taskQ->addTask(Task(func,arg));
+    taskQ->addTask(Task<T>(func,arg));
     pthread_cond_signal(&isEmpty);
 }
 
-inline void ThreadPool::addTask(const Task& t){
+template<typename T>
+inline void ThreadPool<T>::addTask(const Task<T>& t){
     if(shutdown){
         return;
     }
@@ -142,16 +148,36 @@ inline void ThreadPool::addTask(const Task& t){
     pthread_cond_signal(&isEmpty);
 }
 
-inline const int ThreadPool::getBusyNum(){
+template<typename T>
+inline const int ThreadPool<T>::getBusyNum(){
     pthread_mutex_lock(&mutexPool);
     int busy = busyNum;
     pthread_mutex_unlock(&mutexPool);
     return busy;
 }
 
-inline const int ThreadPool::getAliveNum(){
+template<typename T>
+inline const int ThreadPool<T>::getAliveNum(){
     pthread_mutex_lock(&mutexPool);
     int alive = liveNum;
     pthread_mutex_unlock(&mutexPool);
     return alive;
+}
+
+template<typename T>
+inline ThreadPool<T>::~ThreadPool(){
+    //关闭线程池
+    shutdown=true;
+    //回收
+    pthread_join(managerID,NULL);
+    //唤醒正在阻塞的线程
+    for(int i = 0; i < liveNum;++i){
+        pthread_cond_signal(&isEmpty);
+    }
+    //释放内存
+    if(taskQ)delete taskQ;
+    if(workerIDs)delete[] workerIDs;
+
+    pthread_cond_destroy(&isEmpty);
+    pthread_mutex_destroy(&mutexPool);
 }

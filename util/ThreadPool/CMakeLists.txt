@@ -1,24 +1,24 @@
-# Set the minimum version of CMake that can be used
-# To find the cmake version run
-# $ cmake --version
 cmake_minimum_required(VERSION 3.5)
+set(CMAKE_CXX_FLAGS "-std=c++11 -pthread")
+project(ThreadPool)
 
-# Set the project name
-project (ThreadPool)
-
-# Create a sources variable with a link to all cpp files to compile
-set(SOURCES
-    src/ThreadPool.cpp
-    src/TaskQueue.cpp
-    src/main.cpp
+include_directories(
+    ${PROJECT_SOURCE_DIR}/include
 )
 
-# Add an executable with the above sources
-add_executable(ThreadPool ${SOURCES})
-
-# Set the directories that should be included in the build command for this target
-# when running g++ these will be included as -I/directory/path/
-target_include_directories(ThreadPool
-    PRIVATE 
-        ${PROJECT_SOURCE_DIR}/include
+set(SRC
+    ${PROJECT_SOURCE_DIR}/src/ThreadPool.cpp
+    ${PROJECT_SOURCE_DIR}/src/TaskQueue.cpp
+    ${PROJECT_SOURCE_DIR}/src/main.cpp
 )
+
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/lib)
+
+set(LIB_NAME ThreadPool_lib)
+
+add_library(${LIB_NAME} STATIC ${SRC})
+
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/bin)
+
+add_executable(${PROJECT_NAME} ${SRC})
+
