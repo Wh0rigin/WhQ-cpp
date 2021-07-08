@@ -1,0 +1,40 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+../include/TaskQueue.hpp
+deque
+-
+pthread.h
+-
+
+../include/ThreadPool.hpp
+TaskQueue.hpp
+../include/TaskQueue.hpp
+stdio.h
+-
+unistd.h
+-
+string.h
+-
+
+/home/hsensei/myfile/WhQ-cpp/util/ThreadPool/src/TaskQueue.cpp
+TaskQueue.hpp
+/home/hsensei/myfile/WhQ-cpp/util/ThreadPool/src/TaskQueue.hpp
+
+/home/hsensei/myfile/WhQ-cpp/util/ThreadPool/src/ThreadPool.cpp
+ThreadPool.hpp
+/home/hsensei/myfile/WhQ-cpp/util/ThreadPool/src/ThreadPool.hpp
+TaskQueue.cpp
+/home/hsensei/myfile/WhQ-cpp/util/ThreadPool/src/TaskQueue.cpp
+
+/home/hsensei/myfile/WhQ-cpp/util/ThreadPool/src/main.cpp
+ThreadPool.hpp
+/home/hsensei/myfile/WhQ-cpp/util/ThreadPool/src/ThreadPool.hpp
+ThreadPool.cpp
+/home/hsensei/myfile/WhQ-cpp/util/ThreadPool/src/ThreadPool.cpp
+
