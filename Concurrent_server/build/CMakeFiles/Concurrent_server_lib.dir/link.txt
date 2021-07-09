@@ -1,0 +1,2 @@
+/usr/bin/ar qc libConcurrent_server_lib.a  CMakeFiles/Concurrent_server_lib.dir/src/ThreadPool.cpp.o CMakeFiles/Concurrent_server_lib.dir/src/TaskQueue.cpp.o CMakeFiles/Concurrent_server_lib.dir/src/Server.cpp.o CMakeFiles/Concurrent_server_lib.dir/src/main.cpp.o
+/usr/bin/ranlib libConcurrent_server_lib.a

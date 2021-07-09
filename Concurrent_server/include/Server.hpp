@@ -13,6 +13,8 @@
 #include <stdio.h>
 #include <errno.h>
 
+const int BUFFER_SIZE = 1024;
+
 class Server{
 public:
 	explicit Server();
@@ -21,11 +23,14 @@ public:
 public:
 	void Listen();
 private:
-	const int accept();  	
+	const int fdaccept();
+	static void doHandler(void* arg);
 private:
 	const char* Ip;
-	int port ;
+	int Port ;
 	int listenfd;
 };
+
+
 
 #endif

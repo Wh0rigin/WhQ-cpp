@@ -1,4 +1,4 @@
-#include "Server.h"
+#include "Server.hpp"
 
 inline Server::Server(){}
 inline Server::Server(const char* ip,const int& port):Ip(ip),Port(port){}

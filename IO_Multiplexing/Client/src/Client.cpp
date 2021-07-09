@@ -1,4 +1,4 @@
-#include "Client.h"
+#include "Client.hpp"
 
 inline Client::Client(){}
 inline Client::Client(const char* ip,const int& port):Ip(ip),Port(port){}
